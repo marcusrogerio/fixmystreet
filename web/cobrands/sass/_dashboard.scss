@@ -176,22 +176,20 @@
         width: 16px;
         height: 16px;
         background-repeat: no-repeat;
-        @include svg-background-image('/cobrands/fixmystreet/images/crosshairs');
-        background-size: 16px 16px;
+        background-size: 112px 16px;
+        @include svg-background-image('/cobrands/fixmystreet/images/button-icons');
+        background-position: -96px 0;
         margin-#{$right}: 0.5em;
         vertical-align: -0.1em;
     }
 }
 
-.dashboard-ranking-table {
+.dashboard-ranking-table,
+.dashboard-contacts-table {
     width: 100%;
 
     td {
         padding: 0.4em 0.8em;
-
-        &:last-child {
-            text-align: $right;
-        }
     }
 
     tbody tr:nth-child(odd) {
@@ -202,5 +200,20 @@
 
     tfoot td {
         font-weight: bold;
+    }
+}
+
+.dashboard-ranking-table {
+    td {
+        &:last-child {
+            text-align: $right;
+        }
+    }
+}
+
+.dashboard-contacts-table {
+    th {
+        text-align: $left;
+        padding: 0.4em 0.8em;
     }
 }

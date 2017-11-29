@@ -157,6 +157,28 @@ sub index : Path : Args(0) {
         %$prob_where,
         'me.confirmed' => { '>=', $dtf->format_datetime( $now->clone->subtract( days => 30 ) ) },
     };
+
+    if ( $c->get_param('start_date') or $c->get_param('end_date') ) {
+        my @parts;
+        if ($c->get_param('start_date')) {
+            my $date = $dtf->parse_datetime( $c->get_param('start_date') );
+            push @parts, { '>=', $dtf->format_datetime( $date ) };
+            $c->stash->{start_date} = $c->get_param('start_date');
+        }
+        if ($c->get_param('end_date')) {
+            my $one_day = DateTime::Duration->new( days => 1 );
+            my $date = $dtf->parse_datetime( $c->get_param('end_date') );
+            push @parts, { '<', $dtf->format_datetime( $date + $one_day ) };
+            $c->stash->{end_date} = $c->get_param('end_date');
+        }
+
+        if (scalar @parts == 2) {
+            $params->{'me.confirmed'} = [ -and => $parts[0], $parts[1] ];
+        } else {
+            $params->{'me.confirmed'} = $parts[0];
+        }
+    }
+
     my $problems_rs = $c->cobrand->problems->to_body($body)->search( $params );
     my @problems = $problems_rs->all;
 
@@ -211,7 +233,7 @@ sub export_as_csv {
             'Closed',
             'Status',
             'Latitude', 'Longitude',
-            'Nearest Postcode',
+            'Query',
             'Ward',
             'Easting',
             'Northing',

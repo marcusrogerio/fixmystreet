@@ -314,7 +314,8 @@ $.extend(fixmystreet.set_up, {
     }
 
     if ('geolocation' in navigator) {
-        fixmystreet.geolocate.setup(function(pos) {
+        var el = document.querySelector('.btn--geolocate');
+        fixmystreet.geolocate(el, function(pos) {
             var latlon = new OpenLayers.LonLat(pos.coords.longitude, pos.coords.latitude);
             var bng = latlon.clone().transform(
                 new OpenLayers.Projection("EPSG:4326"),
@@ -329,16 +330,11 @@ $.extend(fixmystreet.set_up, {
         });
     }
 
-    // Make the "Provide an update" form toggleable, and hide it by default.
+    // Make the "Provide an update" form toggleable, hidden by default.
     // (Inspectors will normally just use the #public_update box instead).
-    var $updateFormH2 = $('.update-form-heading');
-    var $updateFormBtn = $('<button>').insertBefore( $updateFormH2 );
-    $updateFormH2.hide().nextAll().hide();
-    $updateFormBtn.addClass('btn btn--provide-update');
-    $updateFormBtn.text( $updateFormH2.text() );
-    $updateFormBtn.on('click', function(e) {
+    $('.js-provide-update').on('click', function(e) {
         e.preventDefault();
-        $updateFormH2.nextAll().toggle();
+        $(this).next().toggleClass('hidden-js');
     });
   },
 

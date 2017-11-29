@@ -10,9 +10,16 @@
         - Don't cover whole map with pin loading indicator.
         - Add Expand map toggle to more mobile maps.
         - Add functionality to have per-body /reports page.
+        - Cobrands can disable sending of moderation emails. #1910
+        - Open311 category group support. #1923
     - Front end improvements:
+        - SVG assets for core elements like button icons and map controls #1888
         - Remove unneeded 2x PNG fallback images.
         - Individual cobrands can disable social login #1890
+        - Improve performance of various pages, especially front. #1903
+        - Don't show geolocation link on non-HTTPS pages.
+        - More prominent "Hide pins" link on map pages, to aid reporting in busy areas. #525
+        - Improve location disambiguation page on small screens. #1918
     - Bugfixes
         - Shortlist menu item always remains a link #1855
         - Fix encoded entities in RSS output. #1859
@@ -26,16 +33,22 @@
         - Fix pin size when JavaScript unavailable.
         - Fix display of text only body contacts #1895
         - Prevent text overflow bug on homepage stats #1722
+        - Stop page jumping too far down on inspect form. #1863
+        - Prevent multiple 'Expand map' links appearing. #1909
+        - Superusers without a from_body can make reports again. #1913
+        - Fix crash when viewing /around in certain locales. #1916
+        - Fix back bug, from report after using list filters. #1920
     - Admin improvements:
-      - Character length limit can be placed on report detailed information #1848
-      - Inspector panel shows nearest address if available #1850
-      - Return a 200 rather than 404 for ref ID lookup.
-      - Public report page shows state changes made in admin interface #1846
-      - Remove hidden from default staff state dropdown. #1878
-      - Marking an item as a duplicate enforces providing duplicate id or
-        a public update #1873
-      - Report field pre-filling for inspectors configurable #1854
-      - Admins can now unban users #1881
+        - Character length limit can be placed on report detailed information #1848
+        - Inspector panel shows nearest address if available #1850
+        - Return a 200 rather than 404 for ref ID lookup.
+        - Public report page shows state changes made in admin interface #1846
+        - Remove hidden from default staff state dropdown. #1878
+        - Marking an item as a duplicate enforces providing duplicate id or
+          a public update #1873
+        - Report field pre-filling for inspectors configurable #1854
+        - Admins can now unban users #1881
+        - Council dashboard has date range for report generation #1885
     - UK:
         - Use SVG logo, inlined on front page. #1887
         - Inline critical CSS on front page.

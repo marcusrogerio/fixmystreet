@@ -3,7 +3,6 @@
 $body-font: MuseoSans, Helmet, Freesans, sans-serif !default;
 $meta-font: Helmet, Freesans, sans-serif !default;
 $heading-font: 'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif !default;
-$image-sprite: '../fixmystreet/images/sprite.png' !default;
 $menu-image: 'menu-white' !default;
 
 $itemlist_item_background: #f6f6f6 !default;
@@ -233,6 +232,10 @@ input[type=number],
 input[type=text],
 input[type=password],
 input[type=email],
+input[type=date],
+input[type=time],
+input[type=datetime],
+input[type=url],
 textarea {
   @include box-sizing(border-box);
   display: block;
@@ -496,7 +499,10 @@ ul.error {
   display: block;
   width: 175px;
   height: 60px;
-  background: url($image-sprite) -8px 5px no-repeat;
+  background-position: 0 50%;
+  background-repeat: no-repeat;
+  background-size: 175px 35px;
+  @include svg-background-image("/cobrands/fixmystreet/images/site-logo");
   text-indent: -999999px;
 }
 
@@ -561,71 +567,81 @@ ul.error {
   }
 }
 
-// #key-tools is the list that's pulled out an stick to the bottom of the page of desktop, below is mostly just aesthetic
 .shadow-wrap {
   margin: 0 -1em;
-  ul#key-tools{
-    @include list-reset-soft;
-    margin-bottom: 1em;
-    display: table;
-    width:100%;
-    li{
-      display: table-cell;
-      vertical-align: bottom;
-      text-align: center;
-      border-#{$right}: 0.25em solid #fff;
-      &:last-child {
-        border-#{$right}: none;
-      }
-      input[type=submit] {
-          width: 100%;
-          border: none;
-      }
-      a, input[type=submit] {
-        display: block;
-        background-color: #f5f5f5;
-        background-repeat: no-repeat;
-        color: #333 !important;
-        padding:4em 2em 1em;
-        text-transform:uppercase;
-        font: {
-          size:0.6875em;
-          family: $meta-font;
-          weight: normal;
-        }
-        line-height: 1.2em;
-        white-space: normal;
-        border-radius: 0;
-        &:hover, &.hover {
-          text-decoration:none;
-          background-color:#333;
-          color: #fff !important;
-        }
-        &.abuse {
-          background-image: url($image-sprite);
-          background-position: center -2424px;
-        }
-        &.feed {
-          background-image: url($image-sprite);
-          background-position: center -2563px;
-        }
+}
 
-        &.share {
-          background-image: url('/cobrands/fixmystreet/images/share.png');
-          background-position: center 25%;
-        }
-        &.chevron {
-          background-image: inline-image("../fixmystreet/images/chevron-grey-#{$right}.svg");
-          background-position: center 25%;
-          background-size: 20px 25px;
-        }
-        &.chevron.hover {
-          background-size: auto auto;
-        }
-        &.hover {
-          background-image: url($image-sprite);
-          background-position: center -2064px;
-        }
+#key-tools {
+  @include list-reset-soft;
+  margin-bottom: 1em;
+  display: table;
+  width: 100%;
+
+  li {
+    display: table-cell;
+    vertical-align: bottom;
+    text-align: center;
+    border-#{$right}: 0.25em solid #fff;
+
+    &:last-child {
+      border-#{$right}: none;
+    }
+  }
+
+  button {
+    width: 100%;
+    border: none;
+  }
+
+  a, button {
+    display: block;
+    background-color: #f5f5f5;
+    background-repeat: no-repeat;
+    color: #333 !important;
+    padding: 1em;
+    text-transform: uppercase;
+    font-size: 0.6875em;
+    font-family: $meta-font;
+    font-weight: normal;
+    line-height: 1.2em;
+    white-space: normal;
+    border-radius: 0;
+
+    &:hover, &.hover {
+      text-decoration:none;
+      background-color:#333;
+      color: #fff !important;
+    }
+
+    &:after {
+      content: "";
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-#{$left}: 0.5em;
+      vertical-align: -0.25em;
+      background-size: 112px 16px;
+      background-repeat: no-repeat;
+      @include svg-background-image('/cobrands/fixmystreet/images/report-tools');
+    }
+
+    &.abuse:after {
+      background-position: -96px 0;
+    }
+
+    &.feed:after {
+      background-position: -64px 0;
+    }
+
+    &.share:after {
+      background-position: -80px 0;
+    }
+
+    &.chevron:after {
+      @if ($right == 'right') {
+        background-position: -16px 0;
+      } @else {
+        background-position: 0 0;
       }
     }
   }
@@ -633,23 +649,17 @@ ul.error {
 
 //because display:table doesn't work we float
 .ie7 {
-  .shadow-wrap {
-    ul#key-tools{
-      background:#f5f5f5;
-      li{
-        float: $left;
-        a {
-          padding-#{$left}: 1.5em;
-          padding-#{$right}: 3em;
-        }
-      }
+  #key-tools {
+    background: #f5f5f5;
+
+    li {
+      float: $left;
     }
-  }
-}
-.iel8 {
-  .shadow-wrap ul#key-tools li a.chevron {
-    background-image:url('/cobrands/fixmystreet/images/ie_key_tools_sprite.gif');
-    background-position: $right -116px;
+
+    a {
+      padding-#{$left}: 1.5em;
+      padding-#{$right}: 3em;
+    }
   }
 }
 
@@ -755,6 +765,9 @@ input.final-submit {
     }
 }
 
+.btn--back,
+.btn--forward,
+.btn--cancel,
 .btn--navigate,
 .btn--geolocate,
 .btn--shortlist,
@@ -765,28 +778,60 @@ input.final-submit {
         width: 16px;
         height: 16px;
         background-repeat: no-repeat;
-        @include svg-background-image('/cobrands/fixmystreet/images/navigate');
-        background-size: 16px 16px;
+        background-size: 112px 16px;
+        @include svg-background-image('/cobrands/fixmystreet/images/button-icons');
         margin-#{$right}: 0.5em;
         vertical-align: -0.1em; // vertically centre icon in button
     }
 }
 
+.btn--back {
+    &:before {
+        @if ($right == 'right') {
+            background-position: 0 0;
+        } @else  {
+            background-position: -16px 0;
+        }
+    }
+}
+
+.btn--forward {
+    &:before {
+        @if ($right == 'right') {
+            background-position: -16px 0;
+        } @else  {
+            background-position: 0 0;
+        }
+    }
+}
+
+.btn--cancel {
+    &:before {
+        background-position: -32px 0;
+    }
+}
+
+.btn--navigate {
+    &:before {
+        background-position: -80px 0;
+    }
+}
+
 .btn--geolocate {
     &:before {
-        @include svg-background-image('/cobrands/fixmystreet/images/crosshairs');
+        background-position: -96px 0;
     }
 }
 
 .btn--shortlist {
     &:before {
-        @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlist-mini');
+        background-position: -64px 0;
     }
 }
 
 .btn--shortlisted {
     &:before {
-        @include svg-background-image('/cobrands/fixmystreet/images/icon-shortlisted-mini');
+        background-position: -48px 0;
     }
 }
 
@@ -813,56 +858,6 @@ input.final-submit {
 
 .js #js-social-email-hide {
     display: none;
-}
-
-.button-fwd {
-  padding: flip(1em 3em 1em 1em, 1em 1em 1em 3em);
-  background: inline-image("../fixmystreet/images/chevron-grey-#{$right}.svg") $right 50% no-repeat;
-}
-.button-back {
-  padding: flip(1em 1em 1em 3em, 1em 3em 1em 1em);
-  background: inline-image("../fixmystreet/images/chevron-grey-#{$left}.svg") $left 50% no-repeat;
-}
-.button-fwd,
-.button-back {
-  @include inline-block;
-  cursor:pointer;
-  font-size: 1em;
-  line-height: 1;
-  margin:0;
-  border:1px solid #999;
-  color:#333;
-  background-color: #eee;
-  background-size: 20px+16px 25px;
-  @include border-radius(4px);
-  &:hover{
-    color:#fff;
-    background-color: #777;
-    text-decoration: none;
-    border:1px solid #666;
-  }
-}
-.iel8 {
-  .button-fwd, .button-back {
-    background-image: url($image-sprite);
-    background-repeat: no-repeat;
-  }
-  .button-fwd {
-    background-position: right -686px;
-  }
-  .button-back {
-    background-position: -18px -802px;
-  }
-}
-
-.rap-notes-trigger {
-  &.clicked {
-    background-image: inline-image("../fixmystreet/images/cross-grey.svg");
-
-    .iel8 & {
-      background-image: url("../fixmystreet/images/cross-grey.png");
-    }
-  }
 }
 
 .banner {
@@ -892,12 +887,14 @@ input.final-submit {
       border-#{$left}: 0.5em solid transparent;
       border-bottom: 0.5em solid #888;
     }
-    &#fixed {
-      color:#fff;
-      background: $col_fixed_label;
-      &:before {
-        border-bottom: 0.5em solid $col_fixed_label_dark;
-      }
+  }
+
+  #fixed {
+    color:#fff;
+    background: $col_fixed_label;
+
+    &:before {
+      border-bottom: 0.5em solid $col_fixed_label_dark;
     }
   }
 }
@@ -1257,19 +1254,24 @@ input.final-submit {
   a {
     display: block;
     position: relative;
+
     span {
-      position:absolute;
-      top:0;
+      position: absolute;
+      top: 0;
       #{$right}: 0;
-      display:block;
-      width:20px;
-      height:20px;
+      display: block;
+      width: 20px;
+      height: 0;
+      padding-top: 20px;
       opacity: 0.5;
-      background:#fff url($image-sprite) -16px -1098px no-repeat;
-      //hide text - http://nicolasgallagher.com/another-css-image-replacement-technique/
-      font: 0/0 a;
-      color: transparent;
+      overflow: hidden;
+      background-color: #fff;
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+      background-size: 16px 16px;
+      @include svg-background-image('/cobrands/fixmystreet/images/magnify');
     }
+
     &:hover span {
       opacity: 1;
     }
@@ -1282,13 +1284,27 @@ input.final-submit {
   line-height: 1.2em;
   margin-bottom: 1em;
   padding-bottom: 0.8em;
-  padding-#{$left}: 22px;
-  background: transparent url(/cobrands/fixmystreet/images/chevron-grey-#{$left}.svg) #{$left} 0 no-repeat;
-  background-size: 13px 16px;
   border-bottom: 1px solid #eee;
 
   &:link, &:visited, &:hover {
     color: #666;
+  }
+
+  &:before {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-#{$right}: 0.5em;
+    vertical-align: -0.15em;
+    background-size: 112px 16px;
+    background-repeat: no-repeat;
+    @include svg-background-image('/cobrands/fixmystreet/images/report-tools');
+    @if ($right == 'right') {
+      background-position: 0 0;
+    } @else {
+      background-position: -16px 0;
+    }
   }
 }
 
@@ -1398,47 +1414,50 @@ html.js #map .noscript {
   position: absolute;
   cursor: pointer;
   width: 36px;
-  height: 36px;
-  text-indent: flip(-999999px, 999999px); // text-align from OL style makes this necessary
-  background: url($image-sprite) no-repeat;
+  height: 0;
+  padding-top: 36px;
+  overflow: hidden;
+  @include svg-background-image('/cobrands/fixmystreet/images/fms-pan-zoom');
+  background-size: 156px 72px;
+  background-repeat: no-repeat;
   filter: none !important; // Override OpenLayers PNG handling of the navigation
 }
 
 #fms_pan_zoom_panup {
-  background-position: -42px -222px;
+  background-position: 0 0;
   #{$right}: 30px;
   #{$left}: auto;
   top: 0;
 }
 #fms_pan_zoom_pandown {
-  background-position: -42px -282px;
+  background-position: 0 -36px;
   #{$right}: 30px;
   #{$left}: auto;
   top: 72px;
 }
 #fms_pan_zoom_panleft {
-  background-position: -12px -252px;
+  background-position: -36px 0;
   width: 48px;
   #{$right}: flip(48px, 0);
   #{$left}: auto;
   top: 36px;
 }
 #fms_pan_zoom_panright {
-  background-position: -60px -252px;
+  background-position: -36px -36px;
   width: 48px;
   #{$right}: flip(0, 48px);
   #{$left}: auto;
   top: 36px;
 }
 #fms_pan_zoom_zoomin {
-  background-position: -152px -223px;
-  height: 44px;
+  background-position: -84px 0;
+  padding-top: 44px;
   #{$left}: 0;
   top: 0;
 }
 #fms_pan_zoom_zoomout {
-  background-position: -152px -259px;
-  height: 44px;
+  background-position: -120px 100%;
+  padding-top: 44px;
   #{$left}: 0;
   top: 44px;
 }
@@ -1449,62 +1468,55 @@ html.js #map .noscript {
   #{$left}: 0;
   #{$right}: 0;
   bottom: 0;
-  background:#333;
-  background:rgba(0, 0, 0, 0.7);
-  margin:0;
+  background: #333;
+  background: rgba(0, 0, 0, 0.7);
+  margin: 0;
+
   a {
-    @include inline-block;
-    font-size:0.6875em;
-    color:#fff;
-    padding: flip(0.6em 3em 0.5em 1em, 0.6em 1em 0.5em 3em);
-    background-repeat:no-repeat;
-    &#hide_pins_link {
-      background-image:url($image-sprite);
-      background-position: flip(right, -341px) -3976px;
-    }
-    &#map_permalink {
-      background-image:url($image-sprite);
-      background-position: flip(right, -341px) -4070px;
-    }
-    &#fms_shortlist_all {
-      padding: 0.6em 1em 0.5em 1em;
-      &:after {
-         content: "";
-         display: inline-block;
-         width: 16px;
-         height: 16px;
-         @include svg-background-image('/cobrands/fixmystreet/images/map-marker');
-         background-size: 16px 16px;
-         vertical-align: middle;
-         margin: flip(0 0 0 8px, 0 8px 0 0);
-       }
-    }
-    &.feed {
-      background-image:url($image-sprite);
-      background-position: flip(right, -341px) -3936px;
-    }
-    &#toggle-fullscreen {
-      padding: 0.6em 1em 0.5em 1em;
-      &:after {
-        content: "";
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        background-size: 16px 16px;
-        vertical-align: middle;
-        margin-#{$left}: 8px;
-      }
-      &.expand:after {
-        @include svg-background-image('/cobrands/fixmystreet/images/expand');
-      }
-      &.compress:after {
-        @include svg-background-image('/cobrands/fixmystreet/images/compress');
-      }
-    }
+    display: inline-block;
+    font-size: 0.6875em;
+    color: #fff;
+    padding: 0.6em 1em 0.5em 1em;
+
     &:hover {
-      background-color:#000;
-      text-decoration:none;
+      background-color: #000;
+      text-decoration: none;
     }
+
+    &:after {
+      content: "";
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-#{left}: 8px;
+      vertical-align: -0.1em;
+      background-size: 96px 12px;
+      @include svg-background-image('/cobrands/fixmystreet/images/map-tools');
+    }
+  }
+
+  .feed:after {
+    background-position: -12px 0;
+  }
+
+  #hide_pins_link:after {
+    background-position: -24px 0;
+  }
+
+  #map_permalink:after {
+    background-position: -48px 0;
+  }
+
+  #fms_shortlist_all:after {
+    background-position: -60px 0;
+  }
+
+  #toggle-fullscreen:after {
+    background-position: -72px 0;
+  }
+
+  #toggle-fullscreen.compress:after {
+    background-position: -84px 0;
   }
 }
 
@@ -1546,13 +1558,26 @@ html.js #map .noscript {
       display: block;
       #{$right}: 1em;
       bottom: 0;
-      height: 20px;
-      padding-top: 30px;
       width: 4em;
-      background: #fff url($image-sprite) 12px -4140px no-repeat;
+      background: #fff;
       color: #000;
+
+      &:before {
+        content: "";
+        display: block;
+        width: 16px;
+        height: 16px;
+        margin: 0 auto 2px auto;
+        background-size: 112px 16px;
+        @include svg-background-image('/cobrands/fixmystreet/images/report-tools');
+        background-position: -32px 0;
+      }
     }
   }
+}
+
+.big-hide-pins-link {
+    display: none; // will become `block` in layout.scss
 }
 
 .big-green-banner {
@@ -1638,10 +1663,7 @@ img.pin {
     height: 64px;
 }
 
-// only on mobile
-a.rap-notes-trigger,
-a:hover.rap-notes-trigger {
-  display: block;
+.rap-notes-trigger {
   margin-bottom: 1em;
 }
 
@@ -1957,9 +1979,19 @@ label .muted {
       background:#2a2a2a;
     }
   }
+  a#geolocate_link.loading {
+      background: #1a1a1a url("/cobrands/fixmystreet/images/spinner-black.gif") 100% 50% no-repeat;
+      border-right: solid 0.5em #1a1a1a;
+      padding-right: 1.5em;
+  }
 }
 .no-js #geolocate_link {
     display: none !important;
+}
+
+a#geolocate_link.loading, .btn--geolocate.loading {
+    background: url("/cobrands/fixmystreet/images/spinner-white.gif") 100% 50% no-repeat;
+    padding-right: 1.5em;
 }
 
 #front-howto {

@@ -171,12 +171,12 @@ fixmystreet.resize_to = {
     if ($rapSidebar.length) {
         $rapSidebar.hide();
         $('<a>')
-            .addClass('rap-notes-trigger button-fwd')
+            .addClass('rap-notes-trigger btn btn--block btn--forward')
             .html(translation_strings.how_to_send)
             .insertBefore($rapSidebar)
             .on('click', function(){
                 $rapSidebar.slideToggle(100);
-                $(this).toggleClass('clicked');
+                $(this).toggleClass('btn--forward btn--cancel');
             });
     }
 
@@ -203,40 +203,6 @@ fixmystreet.resize_to = {
     // like an innert span again.
     $('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');
   }
-};
-
-fixmystreet.geolocate = {
-    setup: function(success_callback) {
-        $('#geolocate_link').click(function(e) {
-            var $link = $(this);
-            e.preventDefault();
-            // Spinny thing!
-            if ($('.mobile').length) {
-                $link.append(' <img src="/cobrands/fixmystreet/images/spinner-black.gif" alt="" align="bottom">');
-            } else {
-                var spincolor = $('<span>').css("color","white").css("color") === $('#front-main').css("background-color") ? 'white' : 'yellow';
-                $link.append(' <img src="/cobrands/fixmystreet/images/spinner-' + spincolor + '.gif" alt="" align="bottom">');
-            }
-            navigator.geolocation.getCurrentPosition(function(pos) {
-                $link.find('img').remove();
-                success_callback(pos);
-            }, function(err) {
-                $link.find('img').remove();
-                if (err.code === 1) { // User said no
-                    $link.html(translation_strings.geolocation_declined);
-                } else if (err.code === 2) { // No position
-                    $link.html(translation_strings.geolocation_no_position);
-                } else if (err.code === 3) { // Too long
-                    $link.html(translation_strings.geolocation_no_result);
-                } else { // Unknown
-                    $link.html(translation_strings.geolocation_unknown);
-                }
-            }, {
-                enableHighAccuracy: true,
-                timeout: 10000
-            });
-        });
-    }
 };
 
 fixmystreet.update_list_item_buttons = function($list) {
@@ -303,8 +269,10 @@ $.extend(fixmystreet.set_up, {
 
   form_validation: function() {
     // FIXME - needs to use translated string
-    jQuery.validator.addMethod('validCategory', function(value, element) {
-        return this.optional(element) || value != '-- Pick a category --'; }, translation_strings.category );
+    if (jQuery.validator) {
+        jQuery.validator.addMethod('validCategory', function(value, element) {
+            return this.optional(element) || value != '-- Pick a category --'; }, translation_strings.category );
+    }
 
     var submitted = false;
 
@@ -406,19 +374,6 @@ $.extend(fixmystreet.set_up, {
             defaultValue: ''
         });
     });
-  },
-
-  report_geolocation: function() {
-    if ('geolocation' in navigator) {
-        fixmystreet.geolocate.setup(function(pos) {
-            var latitude = pos.coords.latitude;
-            var longitude = pos.coords.longitude;
-            var page = $('#geolocate_link').attr('href');
-            location.href = page + '?latitude=' + latitude + ';longitude=' + longitude;
-        });
-    } else {
-        $('#geolocate_link').hide();
-    }
   },
 
   category_change: function() {
@@ -661,8 +616,7 @@ $.extend(fixmystreet.set_up, {
     // to refresh the map when the filter inputs are changed.
     $(".report-list-filters [type=submit]").hide();
 
-    $('#statuses').make_multi();
-    $('#filter_categories').make_multi();
+    $('.js-multiple').make_multi();
   },
 
   mobile_ui_tweaks: function() {
@@ -711,7 +665,7 @@ $.extend(fixmystreet.set_up, {
         }
         $('#key-tools li:empty').remove();
         $('#report-updates-data').insertAfter($('#map_box'));
-        if (fixmystreet.page !== 'around') {
+        if (fixmystreet.page !== 'around' && !$('#toggle-fullscreen').length) {
             $('#sub_map_links').append('<a href="#" id="toggle-fullscreen" class="expand" data-expand-text="'+ translation_strings.expand_map +'" data-compress-text="'+ translation_strings.collapse_map +'" >'+ translation_strings.expand_map +'</span>');
         }
     }
@@ -726,7 +680,6 @@ $.extend(fixmystreet.set_up, {
     //add open/close toggle button (if its not there)
     if ($('#map_links_toggle').length === 0) {
         $('<span>')
-            .html('&nbsp;')
             .attr('id', 'map_links_toggle')
             .on('click', function() {
                 var sub_map_links_css = {},
@@ -743,7 +696,7 @@ $.extend(fixmystreet.set_up, {
             .prependTo('#sub_map_links');
     }
 
-    $('#toggle-fullscreen').click(function() {
+    $('#toggle-fullscreen').off('click').on('click', function() {
       var btnClass = $('html').hasClass('map-fullscreen') ? 'expand' : 'compress';
       var text = $(this).data(btnClass + '-text');
 
@@ -975,6 +928,7 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
             if (!data.contribute_as.body) {
                 $select.find('option[value=body]').remove();
             }
+            $select.change();
             $('#js-contribute-as-wrapper').show();
         } else {
             $('#js-contribute-as-wrapper').hide();
@@ -1038,6 +992,7 @@ fixmystreet.display = {
     }
 
     $('#sub_map_links').hide();
+    $('.big-hide-pins-link').hide();
     if ($('html').hasClass('mobile')) {
         var $map_box = $('#map_box'),
             width = $map_box.width(),
@@ -1117,6 +1072,8 @@ fixmystreet.display = {
                 fixmystreet.map.updateSize();
             }
 
+            $('.big-hide-pins-link').hide();
+
             // If this is the first individual report we've loaded, remove the
             // "all reports" sub_map_links but store them in a global variable
             // so we can reinsert them when the user returns to the all reports
@@ -1177,8 +1134,12 @@ fixmystreet.display = {
   reports_list: function(reportListUrl, callback) {
     // If the report list is already in the DOM,
     // just reveal it, rather than loading new page.
-    if ($('#side').length) {
-        $('#side').show();
+    var side = document.getElementById('side');
+    if (side) {
+        if (side.style.display !== 'none') {
+            return;
+        }
+        side.style.display = '';
         $('#side-form').hide();
         // Report page may have been one or two columns, remove either
         $('#side-report').remove();
@@ -1196,6 +1157,7 @@ fixmystreet.display = {
             $('#sub_map_links').replaceWith(fixmystreet.original.sub_map_links);
             delete fixmystreet.original.sub_map_links;
         }
+        $('.big-hide-pins-link').show();
         fixmystreet.set_up.map_controls();
 
         window.selected_problem_id = undefined;
@@ -1281,6 +1243,7 @@ $(function() {
                     $('#sort').val(e.state.filter_change.sort);
                     $('#filter_categories').add('#statuses')
                         .trigger('change.filters').trigger('change.multiselect');
+                    fixmystreet.display.reports_list(location.href);
                 } else if ('hashchange' in e.state) {
                     // This popstate was just here because the hash changed.
                     // (eg: mobile nav click.) We want to ignore it.
