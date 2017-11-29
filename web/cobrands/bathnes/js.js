@@ -6,7 +6,7 @@ if (!fixmystreet.maps) {
 
 $(fixmystreet.add_assets({
     http_options: {
-        url: "https://confirmdev.eu.ngrok.io/banesmaps/getows.ashx",
+        url: "https://isharemapstest.bathnes.gov.uk/getows.ashx",
         params: {
             mapsource: "BathNES/WFS",
             SERVICE: "WFS",
