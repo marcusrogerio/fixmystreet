@@ -440,7 +440,7 @@ $.extend(fixmystreet.set_up, {
         var $options = $el.find("option");
 
         if ($options.length == 1) {
-            $group_select.append($options.first().clone());
+            add_option($options.get(0));
         } else {
             var label = $el.attr("label");
             var subcategory_id = "subcategory_" + label.replace(/[^a-zA-Z]+/g, '');
@@ -452,7 +452,12 @@ $.extend(fixmystreet.set_up, {
             $opt.data("subcategory_id", subcategory_id);
             $sub_select.append($empty_option.clone());
             $options.each(function() {
-                $sub_select.append($(this).clone());
+                var $newopt = $(this).clone();
+                $sub_select.append($newopt);
+                // Make sure any preselected value is preserved in the new UI:
+                if ($newopt.attr('selected')) {
+                    $group_select.val(label);
+                }
             });
             $sub_select.hide().insertAfter($subcategory_label).change(subcategory_change);
         }
@@ -471,6 +476,7 @@ $.extend(fixmystreet.set_up, {
             add_option(this);
         }
     });
+    $group_select.change();
   },
 
   hide_name: function() {
