@@ -287,6 +287,36 @@ sub generate_summary_figures {
     }
 }
 
+sub generate_body_response_time : Private {
+    my ( $self, $c ) = @_;
+
+    my $substmt = "select min(id) from comment where me.problem_id=comment.problem_id and (problem_state in ('fixed', 'fixed - council', 'fixed - user') or mark_fixed)";
+    my $subquery = FixMyStreet::DB->resultset('Comment')->to_body($c->stash->{body})->search({
+        -or => [
+            problem_state => [ FixMyStreet::DB::Result::Problem->fixed_states() ],
+            mark_fixed => 1,
+        ],
+        'me.id' => \"= ($substmt)",
+        'me.state' => 'confirmed',
+    }, {
+        select   => [
+            { extract => "epoch from me.confirmed-problem.confirmed", -as => 'time' },
+        ],
+        as => [ qw/time/ ],
+        rows => 100,
+        order_by => { -desc => 'me.confirmed' },
+        join => 'problem'
+    })->as_subselect_rs;
+
+    my $avg = $subquery->search({
+    }, {
+        select => [ { avg => "time" } ],
+        as => [ qw/avg/ ],
+    })->first->get_column('avg');
+
+    $c->stash->{body_average} = $avg ? int($avg / 60 / 60 / 24 + 0.5) : 0;
+}
+
 sub export_as_csv {
     my ($self, $c) = @_;
     require Text::CSV;
