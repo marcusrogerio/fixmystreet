@@ -175,11 +175,11 @@ sub generate_data {
     $state_map->{$_} = 'closed' foreach FixMyStreet::DB::Result::Problem->closed_states;
     $state_map->{$_} = 'fixed' foreach FixMyStreet::DB::Result::Problem->fixed_states;
 
-    $self->generate_grouped_data($c);
+    $c->forward('generate_grouped_data');
     $self->generate_summary_figures($c);
 }
 
-sub generate_grouped_data {
+sub generate_grouped_data : Private {
     my ($self, $c) = @_;
     my $state_map = $c->stash->{state_map};
 
@@ -197,6 +197,8 @@ sub generate_grouped_data {
         );
     } elsif ($group_by eq 'device+site') {
         @groups = qw/cobrand service/;
+    } elsif ($group_by eq 'device') {
+        @groups = qw/service/;
     } else {
         $group_by = 'category+state';
         @groups = qw/category state/;
