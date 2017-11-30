@@ -460,10 +460,65 @@ sub summary : Private {
 
     $c->forward('/dashboard/construct_rs_filter');
 
+    if ( $c->get_param('csv') ) {
+        $c->detach('export_summary_csv');
+    }
+
     $c->forward('/dashboard/generate_grouped_data');
     $c->forward('/dashboard/generate_body_response_time');
 
     $c->stash->{template} = 'reports/summary.html';
+}
+
+sub export_summary_csv : Private {
+    my ( $self, $c ) = @_;
+
+    my $csv = Text::CSV->new({ binary => 1, eol => "\n" });
+
+    $csv->combine(
+            'Report ID',
+            'Title',
+            'Category',
+            'Created',
+            'Confirmed',
+            'Status',
+            'Latitude', 'Longitude',
+            'Query',
+            'Report URL',
+            );
+
+    my @body = ($csv->string);
+
+    my $rows = $c->stash->{problems_rs}->search({},
+        {
+            rows => 100,
+            order_by => { '-desc' => 'me.confirmed' },
+        }
+    );
+
+    while ( my $report = $rows->next ) {
+        my $hashref = $report->as_hashref($c);
+
+        $csv->combine(
+            @{$hashref}{
+                'id',
+                'title',
+                'category',
+                'created_pp',
+                'confirmed_pp',
+                'state',
+                'latitude', 'longitude',
+                'postcode',
+                },
+            (join '', $c->cobrand->base_url_for_report($report), $report->url),
+        );
+
+        push @body, $csv->string;
+    }
+
+    $c->res->content_type('text/csv; charset=utf-8');
+    $c->res->header('content-disposition' => "attachment; filename=fixmystreet-data.csv");
+    $c->res->body( join "", @body );
 }
 
 =head2 check_canonical_url
