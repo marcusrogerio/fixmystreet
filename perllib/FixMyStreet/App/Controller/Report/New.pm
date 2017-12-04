@@ -664,7 +664,7 @@ sub setup_categories_and_bodies : Private {
         $bodies_to_list{ $contact->body_id } = $contact->body;
 
         unless ( $seen{$contact->category} ) {
-            push @category_options, { name => $contact->category, value => $contact->category_display, group => $contact->get_extra->{group} };
+            push @category_options, { name => $contact->category, value => $contact->category_display, group => $contact->get_extra_metadata('group') };
 
             my $metas = $contact->get_metadata_for_input;
             $category_extras{$contact->category} = $metas if @$metas;
