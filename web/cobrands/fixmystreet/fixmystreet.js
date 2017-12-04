@@ -445,11 +445,11 @@ $.extend(fixmystreet.set_up, {
             var label = $el.attr("label");
             var subcategory_id = "subcategory_" + label.replace(/[^a-zA-Z]+/g, '');
             var $opt = $("<option></option>").text(label).val(label);
+            $opt.data("subcategory_id", subcategory_id);
             $group_select.append($opt);
 
             var $sub_select = $("<select></select>").addClass("form-control js-subcategory");
             $sub_select.attr("id", subcategory_id);
-            $opt.data("subcategory_id", subcategory_id);
             $sub_select.append($empty_option.clone());
             $options.each(function() {
                 var $newopt = $(this).clone();
