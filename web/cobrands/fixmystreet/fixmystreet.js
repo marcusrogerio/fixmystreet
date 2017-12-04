@@ -415,6 +415,9 @@ $.extend(fixmystreet.set_up, {
 
   category_groups: function() {
     var $category_select = $("select#form_category.js-grouped-select");
+    if ($category_select.length === 0) {
+        return;
+    }
     var $group_select = $("<select></select>").addClass("form-control");
     var $subcategory_label = $("#form_subcategory_label");
     var $empty_option = $category_select.find("option").first();
